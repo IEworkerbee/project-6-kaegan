@@ -1,11 +1,12 @@
 """
 Resource: Brevets
 """
-from flask import Response, request
+from flask import Response, request, jsonify
 from flask_restful import Resource
+import json
 
 # You need to implement this in database/models.py
-from database.models import Brevet
+from database.models import Brevet, Checkpoint
 
 # MongoEngine queries:
 # Brevet.objects() : similar to find_all. Returns a MongoEngine query
@@ -27,3 +28,15 @@ from database.models import Brevet
 # it from a MongoEngine query object to a JSON and send back the JSON
 # directly instead of letting Flask-RESTful attempt to convert it to a
 # JSON for you.
+
+class BrevetsName(Resource):
+    
+    def get(self):
+        brevets = Brevet.objects().to_json()
+        return Response(brevets, mimetype="application/json", status=200)
+    
+    def post(self):
+        input_json = request.json
+        brevet = Brevet(**input_json).save()
+        ret_val = {"id": str(brevet.id)}
+        return ret_val, 200
